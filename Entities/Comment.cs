@@ -7,6 +7,6 @@ public class Comment
     
     public int UserId { get; set; }
     public int PostId { get; set; }
-    public HashSet<int> LikedCommentIds { get; set; } = new HashSet<int>();
-    public HashSet<int> DislikedCommentIds { get; set; } = new HashSet<int>();
+    public HashSet<int> LikedCommentIds { get; set; } = new();
+    public HashSet<int> DislikedCommentIds { get; set; } = new();
 }
