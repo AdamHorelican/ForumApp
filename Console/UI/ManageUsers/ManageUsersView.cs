@@ -30,7 +30,7 @@ public class ManageUsersView
                     await new CreateUserView(userRepo).ShowAsync();
                     break;
                 case "2":
-                    new ListUsersView().Show();
+                    new ListUsersView(userRepo).Show();
                     break;
                 case "0":
                     return;
