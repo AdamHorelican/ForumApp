@@ -19,7 +19,7 @@ public class CommentFileRepository : ICommentRepository
     public async Task<Comment> AddAsync(Comment comment)
     {
         string commentsAsJson = await File.ReadAllTextAsync(filePath);
-        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson);
+        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsAsJson)!;
         int maxId = comments.Count > 0 ? comments.Max(c => c.Id) : 0;
         comment.Id = maxId + 1;
         comments.Add(comment);
@@ -31,7 +31,7 @@ public class CommentFileRepository : ICommentRepository
     public async Task UpdateAsync(Comment comment)
     {
         string CommentsAsJson = await File.ReadAllTextAsync(filePath);
-        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(CommentsAsJson);
+        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(CommentsAsJson)!;
         Comment? existingComment = comments.FirstOrDefault(c => c.Id == comment.Id);
         if (existingComment is null)
         {
@@ -50,7 +50,7 @@ public class CommentFileRepository : ICommentRepository
     public async Task DeleteAsync(int id)
     {
         string CommentAsJson = await File.ReadAllTextAsync(filePath);
-        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(CommentAsJson);
+        List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(CommentAsJson)!;
         Comment? comment = comments.FirstOrDefault(c => c.Id == id);
         
         if (comment is null)
