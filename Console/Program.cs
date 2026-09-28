@@ -1,6 +1,5 @@
 ﻿using Console.UI;
 using FileRepositories;
-using InMemoryRepositories;
 using RepositaryContracts;
 
 System.Console.WriteLine("Starting ....");
