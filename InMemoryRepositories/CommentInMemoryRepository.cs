@@ -6,11 +6,7 @@ namespace InMemoryRepositories;
 public class CommentInMemoryRepository : ICommentRepository
 {
     private List<Comment> comments = new();
-
-    public CommentInMemoryRepository()
-    {
-        AddDummyData();
-    }
+    
         
     public Task<Comment> AddAsync(Comment comment)
     {
@@ -64,28 +60,5 @@ public class CommentInMemoryRepository : ICommentRepository
     public IQueryable<Comment> GetAll()
     {
         return comments.AsQueryable();
-    }
-    
-    
-    private void AddDummyData()
-    {
-        comments.Add(new Comment
-        {
-            Id = 1, Body = "Great first post!", UserId = 2, PostId = 1,
-            LikedCommentIds = new HashSet<int> { 3 },
-            DislikedCommentIds = new HashSet<int>()
-        });
-        comments.Add(new Comment
-        {
-            Id = 2, Body = "Thanks for the tip.", UserId = 3, PostId = 2,
-            LikedCommentIds = new HashSet<int>(),
-            DislikedCommentIds = new HashSet<int>()
-        });
-        comments.Add(new Comment
-        {
-            Id = 3, Body = "I had the same question.", UserId = 1, PostId = 3,
-            LikedCommentIds = new HashSet<int>(),
-            DislikedCommentIds = new HashSet<int>()
-        });
     }
 }

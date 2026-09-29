@@ -6,11 +6,7 @@ namespace InMemoryRepositories;
 public class PostInMemoryRepository : IPostRepository
 {
     private List<Post> posts = new();
-
-    public PostInMemoryRepository()
-    {
-        AddDummyData();
-    }
+    
         
     public Task<Post> AddAsync(Post post)
     {
@@ -64,31 +60,5 @@ public class PostInMemoryRepository : IPostRepository
     public IQueryable<Post> GetAll()
     {
         return posts.AsQueryable();
-    }
-    
-    
-    private void AddDummyData()
-    {
-        posts.Add(new Post
-        {
-            Id = 1, Title = "Welcome to the forum", Body = "This is the very first post.",
-            UserId = 1,
-            LikedPostIds = new HashSet<int> { 2, 3 },   
-            DislikedPostIds = new HashSet<int>()
-        });
-        posts.Add(new Post
-        {
-            Id = 2, Title = "C# tips", Body = "Use HashSet for uniqueness.",
-            UserId = 2,
-            LikedPostIds = new HashSet<int> { 1 },
-            DislikedPostIds = new HashSet<int> { 3 }
-        });
-        posts.Add(new Post
-        {
-            Id = 3, Title = "Question about repositories", Body = "How do I seed data?",
-            UserId = 3,
-            LikedPostIds = new HashSet<int>(),
-            DislikedPostIds = new HashSet<int>()
-        });
     }
 }
