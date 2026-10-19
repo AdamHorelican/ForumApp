@@ -1,0 +1,21 @@
+@host = http://localhost:5129
+
+POST {{host}}/Users
+Content-Type: application/json
+
+{ "username": "alice", "password": "pass1" }
+
+###
+
+GET {{host}}/Users?usernameContains=al
+
+###
+
+POST {{host}}/Posts
+Content-Type: application/json
+
+{ "title": "Welcome", "body": "first post", "userId": 1 }
+
+###
+
+GET {{host}}/Posts/1/comments
