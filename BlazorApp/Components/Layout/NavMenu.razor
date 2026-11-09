@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject AuthenticationStateProvider AuthProvider
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Forum</a>
     </div>
@@ -21,15 +23,39 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="posts/create">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create post
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
             <NavLink class="nav-link" href="users/create">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create user
             </NavLink>
         </div>
+
+        <AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="posts/create">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create post
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <button class="nav-link" @onclick="Logout">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Log out
+                    </button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Log in
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
     </nav>
 </div>
+
+@code {
+    private async Task Logout()
+    {
+        await ((SimpleAuthProvider)AuthProvider).Logout();
+    }
+}

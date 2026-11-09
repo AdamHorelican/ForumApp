@@ -10,4 +10,8 @@
       <ProjectReference Include="..\DTOs\DTOs.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="9.0.20" />
+    </ItemGroup>
+
 </Project>

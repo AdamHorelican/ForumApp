@@ -37,25 +37,32 @@ else
         </ul>
     }
 
-    <div class="mb-3">
-        <label class="form-label" for="comment">Add a comment</label>
-        <textarea id="comment" class="form-control" rows="3" @bind="newComment"></textarea>
-    </div>
+    <AuthorizeView>
+        <Authorized>
+            <div class="mb-3">
+                <label class="form-label" for="comment">Add a comment</label>
+                <textarea id="comment" class="form-control" rows="3" @bind="newComment"></textarea>
+            </div>
 
-    <button class="btn btn-primary" @onclick="AddCommentAsync">Add comment</button>
+            <button class="btn btn-primary" @onclick="AddCommentAsync">Add comment</button>
 
-    @if (commentError is not null)
-    {
-        <div class="alert alert-danger mt-3">@commentError</div>
-    }
+            @if (commentError is not null)
+            {
+                <div class="alert alert-danger mt-3">@commentError</div>
+            }
+        </Authorized>
+        <NotAuthorized>
+            <p><a href="login">Log in</a> to add a comment.</p>
+        </NotAuthorized>
+    </AuthorizeView>
 }
 
 @code {
-    // Part 6 replaces this with the id of the logged-in user.
-    private const int CurrentUserId = 1;
-
     [Parameter]
     public int Id { get; set; }
+
+    [CascadingParameter]
+    public Task<AuthenticationState> State { get; set; } = null!;
 
     private PostDto? post;
     private List<CommentDto> comments = new();
@@ -91,10 +98,13 @@ else
 
         try
         {
+            AuthenticationState authenticationState = await State;
+            int userId = int.Parse(authenticationState.User.FindFirst("Id")!.Value);
+
             CommentDto created = await CommentService.AddCommentAsync(new CreateCommentDto
             {
                 Body = newComment.Trim(),
-                UserId = CurrentUserId,
+                UserId = userId,
                 PostId = Id
             });
 

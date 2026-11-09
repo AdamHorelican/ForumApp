@@ -1,0 +1,52 @@
+﻿@page "/login"
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Log in</PageTitle>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <h1>Please log in</h1>
+
+        <div class="mb-3">
+            <label class="form-label" for="username">Username</label>
+            <input id="username" class="form-control" @bind="userName" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="password">Password</label>
+            <input id="password" type="password" class="form-control" @bind="password" />
+        </div>
+
+        <button class="btn btn-primary" @onclick="LoginAsync">Log in</button>
+
+        @if (errorMessage is not null)
+        {
+            <div class="alert alert-danger mt-3">@errorMessage</div>
+        }
+    </NotAuthorized>
+    <Authorized>
+        <h1>Hello, @context.User.Identity?.Name</h1>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string userName = "";
+    private string password = "";
+    private string? errorMessage;
+
+    private async Task LoginAsync()
+    {
+        errorMessage = null;
+
+        try
+        {
+            await ((SimpleAuthProvider)AuthProvider).Login(userName, password);
+            Navigation.NavigateTo("/");
+        }
+        catch (Exception e)
+        {
+            errorMessage = e.Message;
+        }
+    }
+}
