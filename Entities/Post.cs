@@ -6,6 +6,8 @@ public class Post
     public string Title { get; set; }
     public string Body { get; set; }
     public int UserId {  get; set; }
-    //public HashSet<int> LikedPostIds { get; set; } = new();
-    //public HashSet<int> DislikedPostIds { get; set; } = new();
+    
+    public User User { get; set; } = null!;
+
+    public List<Comment> Comments { get; set; } = new();
 }

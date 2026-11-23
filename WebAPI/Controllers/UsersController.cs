@@ -1,6 +1,7 @@
 ﻿using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositaryContracts;
 
 namespace WebAPI.Controllers;
@@ -21,7 +22,7 @@ public class UsersController : ControllerBase
     {
         try
         {
-            if (userRepo.GetAll().Any(u => u.Username == request.Username))
+            if (await userRepo.GetAll().AnyAsync(u => u.Username == request.Username))
             {
                 return BadRequest($"Username '{request.Username}' is already taken.");
             }
@@ -69,7 +70,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<UserDto>> GetManyUsers([FromQuery] string? usernameContains)
+    public async Task<ActionResult<List<UserDto>>> GetManyUsers([FromQuery] string? usernameContains)
     {
         try
         {
@@ -81,9 +82,9 @@ public class UsersController : ControllerBase
                     u.Username.ToLower().Contains(usernameContains.ToLower()));
             }
 
-            List<UserDto> dtos = query
+            List<UserDto> dtos = await query
                 .Select(u => new UserDto { Id = u.Id, Username = u.Username })
-                .ToList();
+                .ToListAsync();
 
             return Ok(dtos);
         }
@@ -102,7 +103,7 @@ public class UsersController : ControllerBase
         {
             User existing = await userRepo.GetByIdAsync(id);
 
-            if (userRepo.GetAll().Any(u => u.Username == request.Username && u.Id != id))
+            if (await userRepo.GetAll().AnyAsync(u => u.Username == request.Username && u.Id != id))
             {
                 return BadRequest($"Username '{request.Username}' is already taken.");
             }

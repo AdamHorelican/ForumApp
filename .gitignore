@@ -7,3 +7,7 @@ riderModule.iml
 users.json
 posts.json
 comments.json
+
+*.db
+*.db-shm
+*.db-wal

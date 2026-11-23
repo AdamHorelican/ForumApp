@@ -1,6 +1,7 @@
 ﻿using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositaryContracts;
 
 namespace WebAPI.Controllers;
@@ -62,22 +63,40 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<PostDto>> GetSinglePost([FromRoute] int id)
+    public async Task<ActionResult<PostDto>> GetSinglePost([FromRoute] int id,
+        [FromQuery] bool includeAuthor, [FromQuery] bool includeComments)
     {
         try
         {
-            Post post = await postRepo.GetByIdAsync(id);
-            return Ok(new PostDto
+            PostDto? dto = await postRepo.GetAll()
+                .Where(p => p.Id == id)
+                .Select(post => new PostDto
+                {
+                    Id = post.Id,
+                    Title = post.Title,
+                    Body = post.Body,
+                    UserId = post.UserId,
+                    Author = includeAuthor
+                        ? new UserDto { Id = post.User.Id, Username = post.User.Username }
+                        : null,
+                    Comments = includeComments
+                        ? post.Comments.Select(c => new CommentDto
+                        {
+                            Id = c.Id,
+                            Body = c.Body,
+                            UserId = c.UserId,
+                            PostId = c.PostId
+                        }).ToList()
+                        : new List<CommentDto>()
+                })
+                .FirstOrDefaultAsync();
+
+            if (dto is null)
             {
-                Id = post.Id,
-                Title = post.Title,
-                Body = post.Body,
-                UserId = post.UserId
-            });
-        }
-        catch (InvalidOperationException e)
-        {
-            return NotFound(e.Message);
+                return NotFound($"Post with ID '{id}' was not found.");
+            }
+
+            return Ok(dto);
         }
         catch (Exception e)
         {
@@ -87,7 +106,7 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<PostDto>> GetManyPosts([FromQuery] string? titleContains,
+    public async Task<ActionResult<List<PostDto>>> GetManyPosts([FromQuery] string? titleContains,
         [FromQuery] int? userId, [FromQuery] string? username)
     {
         try
@@ -107,15 +126,15 @@ public class PostsController : ControllerBase
 
             if (!string.IsNullOrWhiteSpace(username))
             {
-                List<int> matchingUserIds = userRepo.GetAll()
+                List<int> matchingUserIds = await userRepo.GetAll()
                     .Where(u => u.Username.ToLower().Contains(username.ToLower()))
                     .Select(u => u.Id)
-                    .ToList();
+                    .ToListAsync();
 
                 query = query.Where(p => matchingUserIds.Contains(p.UserId));
             }
 
-            List<PostDto> dtos = query
+            List<PostDto> dtos = await query
                 .Select(p => new PostDto
                 {
                     Id = p.Id,
@@ -123,7 +142,7 @@ public class PostsController : ControllerBase
                     Body = p.Body,
                     UserId = p.UserId
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(dtos);
         }
@@ -141,7 +160,7 @@ public class PostsController : ControllerBase
         {
             await postRepo.GetByIdAsync(id);
 
-            List<CommentDto> dtos = commentRepo.GetAll()
+            List<CommentDto> dtos = await commentRepo.GetAll()
                 .Where(c => c.PostId == id)
                 .Select(c => new CommentDto
                 {
@@ -150,7 +169,7 @@ public class PostsController : ControllerBase
                     UserId = c.UserId,
                     PostId = c.PostId
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(dtos);
         }

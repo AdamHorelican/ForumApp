@@ -1,6 +1,7 @@
 ﻿using DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RepositaryContracts;
 
 namespace WebAPI.Controllers;
@@ -17,12 +18,12 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<UserDto> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<UserDto>> Login([FromBody] LoginRequest request)
     {
         try
         {
-            User? user = userRepo.GetAll()
-                .SingleOrDefault(u => u.Username == request.Username);
+            User? user = await userRepo.GetAll()
+                .SingleOrDefaultAsync(u => u.Username == request.Username);
 
             if (user is null || user.Password != request.Password)
             {
